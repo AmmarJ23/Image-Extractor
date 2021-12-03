@@ -1,10 +1,11 @@
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
 import re
 import pandas as pd
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+
+#if TesseractNotFoundError occurs
+#pytesseract.pytesseract.tesseract_cmd = r'path\to\tesseract.exe'
 
 def tableDetectExtract(file, folderChosen, tableChoice):
     img = cv2.imread(file,0)
@@ -34,8 +35,6 @@ def tableDetectExtract(file, folderChosen, tableChoice):
         image = cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
         boxes.append([x,y,w,h])
 
-
-    plotting = plt.imshow(image,cmap='gray')
     rows=[]
     columns=[]
     heights = [boundingBoxes[i][3] for i in range(len(boundingBoxes))]
