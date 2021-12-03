@@ -7,7 +7,8 @@ import docx
 import re
 from tableDetect import tableDetectExtract
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+#if TesseractNotFoundError occurs
+#pytesseract.pytesseract.tesseract_cmd = r'path\to\tesseract.exe'
 
 def imgTextConvert(image, folderChosen, fileTypeChoice):
     image = cv2.imread(image)
