@@ -32,7 +32,7 @@ def imgTextConvert(image, folderChosen, fileTypeChoice):
 
 def imgDetectionCrop(imgChosen, folderChosen, fileTypeChoice):
     if fileTypeChoice == 0:
-        fileType = '.jpg'
+        fileType = '.jpg'       
     else:
         fileType = '.png'
     img = cv2.imread(imgChosen) 
@@ -41,23 +41,24 @@ def imgDetectionCrop(imgChosen, folderChosen, fileTypeChoice):
     (cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) 
     idx = 0 
     for c in cnts: 
-	    x,y,w,h = cv2.boundingRect(c) 
-	    if w>100 and h>100:
-                idx +=1 
-                new_img=img[y:y+h,x:x+w]
-                if fileTypeChoice == 0: 
-                    cv2.imwrite(folderChosen + '/JPG Export ' + str(idx) + fileType, new_img)
-                else:
-                    cv2.imwrite(folderChosen + '/PNG Export ' + str(idx) + fileType, new_img)
+        x,y,w,h = cv2.boundingRect(c) 
+        
+        if w>100 and h>100:
+            idx +=1 
+            new_img=img[y:y+h,x:x+w]
+            if fileTypeChoice == 0: 
+                cv2.imwrite(folderChosen + '/JPG Export ' + str(idx) + fileType, new_img)
+            else:
+                cv2.imwrite(folderChosen + '/PNG Export ' + str(idx) + fileType, new_img)
 
 def main(title):
-    layout = [  [sg.Text('Please choose an image you wish to process :'), sg.Input(), sg.FileBrowse(file_types=(("*.png *.jpg *.jpeg *.webp", "*.png *.jpg *.jpeg *.webp"),),key = 'imgChosen')],
-                [sg.Text('Please choose the export folder                     :'), sg.Input(), sg.FolderBrowse(key = 'folderChosen')],
+    layout = [  [sg.Text('Please choose an image you wish to process :' ,size=(34,None)), sg.Input(), sg.FileBrowse(file_types=(("*.png *.jpg *.jpeg *.webp", "*.png *.jpg *.jpeg *.webp"),), key = 'imgChosen')],
+                [sg.Text('Please choose the export folder :', size=(34,None)), sg.Input(), sg.FolderBrowse(key = 'folderChosen')],
                 [sg.Button('Submit')],
                 [sg.Text(' ')],
-                [sg.Text('Save image(s) as:     '), sg.Radio('Do not save', "RADIO1", key='inputNoSave1'), sg.Radio('*jpg', "RADIO1", key='inputJpgSave'), sg.Radio('*.png', "RADIO1", key='inputPngSave')],
-                [sg.Text('Save text as:            '), sg.Radio('Do not save', "RADIO2", key='inputNoSave2'), sg.Radio('*txt', "RADIO2", key='inputTxtSave'), sg.Radio('*.docx', "RADIO2", key='inputDocxSave')],
-                [sg.Text('Save table(s) as:       '), sg.Radio('Do not save', "RADIO3", key='inputNoSave3'), sg.Radio('*csv', "RADIO3", key='inputCsvSave'), sg.Radio('*.xlsx', "RADIO3", key='inputXlsxSave')],
+                [sg.Text('Save image(s) as :' ,size=(14,None) ), sg.Checkbox('Do not save', key='inputNoSave1', size=(8,None)), sg.Checkbox('*jpg', key='inputJpgSave', size=(3,None)), sg.Checkbox('*.png', key='inputPngSave')],
+                [sg.Text('Save text as :',size=(14,None)), sg.Checkbox('Do not save',  key='inputNoSave2', size=(8,None)), sg.Checkbox('*txt',  key='inputTxtSave', size=(3,None)), sg.Checkbox('*.docx',  key='inputDocxSave')],
+                [sg.Text('Save table(s) as :',size=(14,None)), sg.Checkbox('Do not save',  key='inputNoSave3', size=(8,None)), sg.Checkbox('*csv',  key='inputCsvSave', size=(3,None)), sg.Checkbox('*.xlsx',  key='inputXlsxSave')],
                 [sg.Button('Run'), sg.Text('   '),sg.Button('Exit')]
     ]
     return sg.Window(title, layout)
@@ -89,23 +90,26 @@ while True:
             if values['inputNoSave1']== True and values['inputNoSave2']== True and values['inputNoSave3']== True:
                 sg.popup('Invalid choices')
 
-            if values['inputJpgSave'] == True:
-                imgDetectionCrop(imgChosen, folderChosen, 0)
-            
-            if values['inputPngSave'] == True:
-                imgDetectionCrop(imgChosen, folderChosen, 1)
+            if values['inputNoSave1']== False:
+                if values['inputJpgSave'] == True:
+                    imgDetectionCrop(imgChosen, folderChosen, 0)
+                
+                if values['inputPngSave'] == True:
+                    imgDetectionCrop(imgChosen, folderChosen, 1)
 
-            if values['inputTxtSave'] == True:
-                imgTextConvert(imgChosen, folderChosen, 0)
-            
-            if values['inputDocxSave'] == True:
-                imgTextConvert(imgChosen, folderChosen, 1)
-             
-            if values['inputCsvSave'] == True:
-                tableDetectExtract(imgChosen, folderChosen, 0)
+            if values['inputNoSave2']== False:
+                if values['inputTxtSave'] == True:
+                    imgTextConvert(imgChosen, folderChosen, 0)
+                
+                if values['inputDocxSave'] == True:
+                    imgTextConvert(imgChosen, folderChosen, 1)
 
-            if values['inputXlsxSave'] == True:
-                tableDetectExtract(imgChosen, folderChosen, 1)
+            if values['inputNoSave3']== False:
+                if values['inputCsvSave'] == True:
+                    tableDetectExtract(imgChosen, folderChosen, 0)
+
+                if values['inputXlsxSave'] == True:
+                    tableDetectExtract(imgChosen, folderChosen, 1)
 
             submitted = 0
             sg.popup('Extraction Complete\nFiles have been saved at', folderChosen)    
@@ -114,4 +118,3 @@ while True:
         #User presses 'Run' but haven't submit their images
         elif event == 'Run' and submitted==0:
             sg.popup("Please press the 'Submit' button to continue")
-    
